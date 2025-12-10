@@ -1,0 +1,382 @@
+/* 引入主页的蓝绿和像素主题变量/样式 */
+/* 注意：这里假设 styles.css 中定义了 .pixel-box, .pixel-btn 等样式，
+        但为了让 diary.css 独立工作，我们将一些关键像素化定义放在这里 */
+
+/* --- 全局主题统一 --- */
+/* 注意：如果主页的 styles.css 已经加载，下面的重复定义可以删除，
+        但为确保本页独立渲染正确，暂时保留核心样式。 */
+        :root {
+            --color-dark-green: #194C4F;
+            --color-medium-green: #3E8E8E;
+            --color-light-green: #B4DFD9;
+            --color-warm-orange: #E68A47;
+            --color-pixel-shadow: #5EAFB0;
+            --color-background-light: #E8F7F3;
+        }
+        
+        body {
+            /* 继承主页的字体和背景 */
+            font-family: 'DotGothic16', monospace; 
+            color: var(--color-dark-green);
+            background-color: var(--color-background-light); 
+        }
+        
+        /* --- 核心容器样式 --- */
+        .diary-main {
+            display: flex;
+            justify-content: center;
+            padding: 30px 20px; /* 调整 padding，给 header 留出空间 */
+            gap: 40px; 
+        }
+        
+        /* 卡片堆叠的容器 */
+        #card-stack-container {
+            width: 600px; 
+            height: 450px; 
+            position: relative;
+            margin: 50px 0 50px 0; 
+        }
+        
+        /* 单个回忆卡片的样式 - 像素化和田园治愈感 */
+        .diary-card {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            
+            /* 像素化边框和阴影 */
+            border: 4px solid var(--color-medium-green); 
+            box-shadow: 6px 6px 0 var(--color-pixel-shadow); 
+            background-color: #FAFFFC; /* 治愈浅白绿 */
+            border-radius: 0; /* 保持方形像素感 */
+            transition: transform 0.6s ease-in-out, opacity 0.6s; 
+            cursor: default;
+            
+            transform: rotateX(0deg) scale(0.98); 
+            z-index: 1; /* 确保所有卡片都在封面之上 */
+        }
+        
+        /* 封面卡片样式 */
+        .diary-card.card-cover {
+            background-color: #92C9B4; /* 治愈绿封面 */
+            color: var(--color-dark-green);
+            z-index: 200; 
+            text-align: center;
+            padding-top: 100px; 
+            box-sizing: border-box;
+        }
+        .diary-card.card-cover h2 {
+            font-size: 2.5em;
+            color: var(--color-warm-orange); /* 暖色调强调 */
+            text-shadow: 2px 2px 0 var(--color-dark-green);
+            margin-bottom: 20px;
+        }
+        .diary-card.card-cover p {
+            font-size: 1.2em;
+        }
+        
+        
+        /* 最后的提示卡片样式 */
+        .diary-card.card-end {
+            background-color: #FFC48C; /* 甜蜜橘色 */
+            color: var(--color-dark-green);
+            text-align: center;
+            padding-top: 150px;
+            box-sizing: border-box;
+            z-index: 0; 
+        }
+        
+        /* 向上翻走/揭开的效果 */
+        .flipped {
+            transform: translateY(-100%) rotateX(15deg) scale(1.05); 
+            opacity: 0; 
+            pointer-events: none; 
+        }
+        
+        /* 卡片内容排版 */
+        .card-content {
+            padding: 20px;
+            height: calc(100% - 40px);
+            overflow-y: auto;
+            /* 取消虚线边框，保持简洁 */
+            border: none; 
+            background-color: transparent; 
+        }
+        
+        .diary-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            /* 像素化分隔线 */
+            border-bottom: 3px dashed var(--color-light-green); 
+        }
+        
+        .diary-body {
+            min-height: 150px;
+            line-height: 1.8;
+            color: #333;
+            white-space: pre-wrap;
+        }
+        
+        .signature {
+            text-align: right;
+            margin-top: 20px;
+            font-style: normal; /* 取消斜体 */
+            color: var(--color-warm-orange); /* 签名使用暖色 */
+            text-shadow: 1px 1px 0 #fff;
+        }
+        
+        
+        /* --- 索引面板样式 --- */
+        
+        #summary-panel {
+            width: 300px;
+            min-height: 500px;
+            background-color: #FFFFFF;
+            padding: 20px;
+            overflow-y: auto;
+            display: none; 
+            
+            /* 像素化边框和阴影 */
+            border: 4px solid var(--color-medium-green); 
+            box-shadow: 6px 6px 0 var(--color-pixel-shadow);
+            border-radius: 0; 
+        }
+        
+        #summary-panel h2 {
+            color: var(--color-dark-green);
+            border-bottom: 4px solid var(--color-light-green);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0 var(--color-light-green);
+        }
+        
+        .month-group {
+            margin-bottom: 20px;
+        }
+        .month-group h3 {
+            color: var(--color-medium-green); 
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            /* 像素化标记 */
+            border-left: 5px solid var(--color-medium-green);
+            padding-left: 10px;
+        }
+        .day-entry {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .day-label {
+            font-weight: bold;
+            width: 40px;
+            color: var(--color-warm-orange);
+            margin-right: 10px;
+        }
+        .diary-tag {
+            padding: 4px 10px;
+            border-radius: 0; /* 像素化方角 */
+            font-size: 0.9em;
+            color: white;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+            border: 2px solid rgba(0,0,0,0.2); /* 标签的像素边框 */
+            box-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+        }
+        
+        /* 标签颜色 (保持与落款一致的颜色区分) */
+        .tag-pink {
+            background-color: #FF69B4; 
+        }
+        .tag-blue {
+            background-color: #4169E1; 
+        }
+        
+        
+        /* --- 模态窗口样式 --- */
+        
+        .modal {
+            /* 保持居中覆盖 */
+            display: none; 
+            position: fixed; 
+            z-index: 2000; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(232, 247, 243, 0.8); /* 使用浅背景色调的半透明 */
+            align-items: center; 
+            justify-content: center; 
+        }
+        .modal-content {
+            background-color: #FFFFFF; 
+            padding: 30px;
+            width: 80%;
+            max-width: 500px; 
+            position: relative;
+            animation-name: animatetop;
+            animation-duration: 0.4s;
+            
+            /* 像素化模态框 */
+            border: 4px solid var(--color-dark-green); 
+            box-shadow: 8px 8px 0 var(--color-medium-green);
+            border-radius: 0; 
+        }
+        .close-btn {
+            color: var(--color-dark-green);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        .close-btn:hover, .close-btn:focus {
+            color: var(--color-warm-orange);
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-content h3 {
+            color: var(--color-dark-green);
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 0 var(--color-light-green);
+        }
+        /* 输入框/文本域使用像素输入框样式 */
+        .modal-content input[type="date"],
+        .modal-content input[type="text"] {
+            flex-grow: 1;
+            padding: 8px;
+            border: 3px solid var(--color-medium-green);
+            border-radius: 0;
+            box-shadow: 2px 2px 0 var(--color-light-green);
+            font-family: 'DotGothic16', monospace;
+        }
+        .modal-content #diary-content {
+            height: 150px;
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box; 
+            border: 3px solid var(--color-medium-green);
+            border-radius: 0;
+            resize: none;
+            margin-top: 15px; 
+            margin-bottom: 15px;
+            font-family: 'DotGothic16', monospace;
+        }
+        
+        /* 落款按钮组样式 - 像素化标签 */
+        .signature-group {
+            margin-top: 15px;
+            justify-content: flex-start; 
+            font-weight: bold;
+        }
+        .signature-group label {
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 0; 
+            transition: background-color 0.2s;
+            border: 2px solid var(--color-dark-green);
+            box-shadow: 1px 1px 0 var(--color-medium-green);
+            background-color: #fff;
+        }
+        .signature-group .pink-label:hover {
+            background-color: #ffe4e8;
+        }
+        .signature-group .blue-label:hover {
+            background-color: #e0e9ff;
+        }
+        .signature-group input[type="radio"] {
+            margin-right: 5px;
+        }
+        
+        
+        /* --- 控制按钮样式 --- */
+        
+        .controls {
+            margin-top: 20px;
+        }
+        /* 使用主页的像素按钮样式 */
+        .controls button {
+            display: inline-block;
+            padding: 8px 15px;
+            margin: 0 10px;
+            cursor: pointer;
+            background-color: #92C9B4; /* 治愈绿按钮 */
+            color: var(--color-dark-green);
+            border: 3px solid var(--color-dark-green);
+            box-shadow: 2px 2px 0 var(--color-medium-green);
+            text-transform: uppercase;
+            transition: all 0.1s;
+            border-radius: 0;
+        }
+        .controls button:hover:not(:disabled) {
+            background-color: #6AA58C;
+        }
+        .controls button:active:not(:disabled) {
+            transform: translate(2px, 2px);
+            box-shadow: none;
+        }
+        .controls button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            color: #666;
+            box-shadow: none;
+        }
+        
+        
+        /* 浮动的“写日记”按钮样式 */
+        #new-diary-btn {
+            position: fixed; 
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--color-warm-orange); 
+            color: white;
+            border: 4px solid var(--color-dark-green); 
+            border-radius: 0; 
+            width: 60px;
+            height: 60px;
+            font-size: 30px;
+            line-height: 60px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 var(--color-medium-green);
+            z-index: 1000; 
+            transition: all 0.2s;
+        }
+        
+        #new-diary-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--color-medium-green);
+        }
+        #new-diary-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: none;
+        }
+        
+        /* 切换视图按钮 */
+        #toggle-view-btn {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background-color: var(--color-medium-green);
+            color: white;
+            border: 3px solid var(--color-dark-green);
+            border-radius: 0;
+            padding: 10px 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 2px 2px 0 var(--color-dark-green);
+            z-index: 1000;
+            transition: all 0.2s;
+        }
+        #toggle-view-btn:hover {
+            background-color: #5f9ea0;
+        }
+        #toggle-view-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: none;
+        }

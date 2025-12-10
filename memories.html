@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+    <title>好好小家 - 我们的回忆卡片</title>
+    <link rel="stylesheet" href="styles.css"> 
+    <link rel="stylesheet" href="diary.css"> 
+</head>
+<body>
+    <header class="pixel-border"> 
+        <h1>📖 我们的回忆卡片 💖</h1>
+        <nav>
+            <a href="index.html" class="pixel-btn">主页</a>
+            <a href="memories.html" class="pixel-btn">回忆录</a>
+            <a href="quests.html" class="pixel-btn">甜蜜任务</a>
+        </nav>
+    </header>
+
+    <main class="diary-main">
+        <div id="card-view">
+            <div id="card-stack-container">
+                
+                <div class="diary-card card-cover" data-page-index="-1"> 
+                    <div class="card-content">
+                        <h2>💌 我们的专属回忆录 </h2>
+                        <p>记录生活中的点滴甜蜜。</p>
+                        <p>请点击 **下一页** 翻开封面，开始查阅日记吧！</p>
+                    </div>
+                </div>
+                
+                <div class="diary-card card-end" data-page-index="end">
+                    <div class="card-content">
+                        <h3>翻完了！</h3>
+                        <p>你已经翻阅了所有的甜蜜回忆。点击右下角的 ✏️ 按钮，创建新的甜蜜吧！</p>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="controls">
+                <button id="prev-btn" class="pixel-btn" disabled>上一页</button>
+                <button id="next-btn" class="pixel-btn primary-btn">下一页</button>
+            </div>
+        </div>
+        
+        <div id="summary-panel">
+            </div>
+    </main>
+    
+    <button id="toggle-view-btn" title="切换视图">📖 索引模式</button>
+    
+    <div id="diary-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h3>写下新的甜蜜日记 ✍️</h3>
+            <div class="input-group">
+                日期: <input type="date" id="diary-date">
+                天气: <input type="text" id="diary-weather" placeholder="晴天/多云/雨">
+            </div>
+            <textarea id="diary-content" placeholder="记录今天发生的美好事情..."></textarea>
+            
+            <div class="input-group signature-group">
+                落款人:
+                <label class="pink-label">
+                    <input type="radio" name="signature-color" value="粉色落款" checked> 💖 我
+                </label>
+                <label class="blue-label">
+                    <input type="radio" name="signature-color" value="蓝色落款"> 💙 对方
+                </label>
+            </div>
+
+            <button id="save-diary" class="pixel-btn primary-btn">保存日记</button>
+        </div>
+    </div>
+
+    <button id="new-diary-btn" title="写一篇新日记">✏️</button> 
+
+    <script src="diary.js"></script>
+</body>
+</html>

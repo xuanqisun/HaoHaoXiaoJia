@@ -1,0 +1,176 @@
+/* 导入像素字体（例如 DotGothic16）*/
+body {
+    font-family: 'DotGothic16', monospace; /* 使用导入的像素字体 */
+    color: #194C4F; /* 深蓝绿色文字 */
+    margin: 0;
+    padding: 0;
+    background-color: #E8F7F3; /* 浅治愈蓝绿色背景 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* --- 像素背景网格 --- */
+#pixel-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    /* 模拟浅色像素网格 */
+    background: 
+        repeating-linear-gradient(0deg, #D4E9E2, #D4E9E2 1px, transparent 1px, transparent 20px),
+        repeating-linear-gradient(90deg, #D4E9E2, #D4E9E2 1px, transparent 1px, transparent 20px);
+    opacity: 0.5;
+}
+
+/* --- 全局样式和像素化效果 --- */
+.pixel-border {
+    border: 4px solid #194C4F; /* 深蓝绿边框 */
+    box-shadow: 4px 4px 0 #3E8E8E; /* 像素阴影 */
+    border-radius: 0; /* 保持方形像素感 */
+}
+
+.pixel-box {
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #FFFFFF; /* 默认白色背景 */
+    max-width: 600px;
+    width: 90%;
+    
+    /* 像素边框和阴影 */
+    border: 4px solid #3E8E8E;
+    box-shadow: 6px 6px 0 #5EAFB0;
+    transition: transform 0.1s ease;
+}
+
+.pixel-box:hover {
+    transform: translate(-1px, -1px); /* 轻微上抬效果 */
+    box-shadow: 7px 7px 0 #5EAFB0;
+}
+
+h1, h2 {
+    color: #194C4F;
+    text-shadow: 2px 2px 0 #A8D1C9; /* 浅色像素阴影 */
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* --- 头部导航 --- */
+header {
+    width: 100%;
+    background-color: #B4DFD9; /* 中蓝绿头部背景 */
+    padding: 10px 0;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.nav-item {
+    text-decoration: none;
+    color: #194C4F;
+    padding: 5px 10px;
+}
+
+/* --- 按钮/输入框的像素化 --- */
+.pixel-btn {
+    display: inline-block;
+    padding: 8px 15px;
+    margin-top: 10px;
+    cursor: pointer;
+    background-color: #92C9B4; /* 治愈绿按钮 */
+    color: #194C4F;
+    border: 3px solid #194C4F;
+    box-shadow: 2px 2px 0 #3E8E8E;
+    text-transform: uppercase;
+    transition: background-color 0.1s;
+    text-decoration: none; /* 确保链接也有按钮样式 */
+}
+
+.pixel-btn:active {
+    background-color: #6AA58C; /* 按下时的颜色 */
+    transform: translate(2px, 2px);
+    box-shadow: none;
+}
+
+.primary-btn {
+    background-color: #FFC48C; /* 甜蜜橘色按钮 */
+    border-color: #E68A47;
+    box-shadow: 2px 2px 0 #C46B34;
+}
+
+.primary-btn:active {
+    background-color: #E6A779;
+}
+
+.pixel-input, textarea {
+    width: calc(100% - 10px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 3px solid #194C4F;
+    box-sizing: border-box;
+    background-color: #FAFFFC;
+    font-family: 'DotGothic16', monospace;
+    color: #194C4F;
+    resize: vertical;
+}
+
+/* --- 计数器部分 --- */
+#counter {
+    text-align: center;
+}
+
+.days-count {
+    font-size: 4em;
+    font-weight: bold;
+    color: #E68A47; /* 暖色调强调 */
+    padding: 10px 0;
+    text-shadow: 4px 4px 0 #FFC48C;
+}
+
+#counter p {
+    margin: -10px 0 0;
+    font-size: 1.5em;
+    color: #3E8E8E;
+}
+
+/* --- 留言板 --- */
+#messages-container {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 2px dashed #B4DFD9;
+}
+
+.message-entry {
+    background-color: #FAFFFC;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-left: 5px solid #E68A47; /* 橘色甜蜜标记 */
+}
+
+.message-date {
+    display: block;
+    font-size: 0.8em;
+    color: #5EAFB0;
+    margin-top: 5px;
+}
+
+/* --- 底部 --- */
+footer {
+    margin-top: auto; /* 推到底部 */
+    width: 100%;
+    background-color: #B4DFD9;
+    color: #194C4F;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 0.9em;
+}

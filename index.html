@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+    <title>好好小家 - 我们的爱的小屋</title>
+    <link rel="stylesheet" href="styles.css"> 
+</head>
+<body>
+    <div id="pixel-background"></div>
+    
+    <header class="pixel-border">
+        <h1>
+            <span class="icon">🏠</span> 好好小家 <span class="icon">💖</span>
+        </h1>
+        <nav>
+            <a href="index.html" class="nav-item pixel-btn">主页</a>
+            <a href="memories.html" class="nav-item pixel-btn">回忆录</a>
+            <a href="quests.html" class="nav-item pixel-btn">甜蜜任务</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="counter" class="pixel-box">
+            <h2><span class="icon">⏳</span> 我们在一起...</h2>
+            <div id="days" class="days-count">000</div> 
+            <p>天</p>
+        </section>
+
+        <section id="message-board" class="pixel-box">
+            <h2><span class="icon">✉️</span> 悄悄话信箱</h2>
+            <p class="description">留下一句今天的甜蜜...</p>
+            <textarea id="message-input" placeholder="请输入您的甜蜜话语..." class="pixel-input"></textarea>
+            <button onclick="postMessage()" class="pixel-btn primary-btn">发送爱语</button>
+        
+            <div id="messages-container">
+                </div>
+        </section>
+    </main>
+
+    <footer class="pixel-border">
+        <p>© 专属我们两人的小家 - 像素爱恋版</p>
+    </footer>
+
+    <script src="script.js"></script> 
+</body>
+</html>
