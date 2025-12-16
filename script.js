@@ -1,20 +1,19 @@
-// --- 基础配置 ---
-const startDate = new Date('2025-09-19'); // 你们在一起的日期
-const SECRET_PASSWORD = 'loveu'; // 你的暗号
 
-// --- 1. 页面初始化与安全验证 ---
+const startDate = new Date('2025-09-19'); 
+const SECRET_PASSWORD = 'loveu'; 
+
+
 document.addEventListener('DOMContentLoaded', () => {
     const authScreen = document.getElementById('auth-screen');
     const appContainer = document.getElementById('app-container');
 
-    // 检查 Session：如果之前登录过，直接显示内容
+
     if (sessionStorage.getItem('isLoggedIn') === 'true') {
         authScreen.style.display = 'none';
         appContainer.style.display = 'flex';
         initAllFunctions();
     }
 
-    // 绑定回车键登录
     const passwordInput = document.getElementById('secret-password-input');
     passwordInput?.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') checkPassword();
@@ -25,7 +24,7 @@ function checkPassword() {
     const input = document.getElementById('secret-password-input');
     if (input.value === SECRET_PASSWORD) {
         sessionStorage.setItem('isLoggedIn', 'true');
-        location.reload(); // 刷新页面进入
+        location.reload(); 
     } else {
         alert('暗号错误！');
         input.value = '';
