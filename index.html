@@ -6,17 +6,15 @@
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
     <title>好好小家 - 我们的爱的小屋</title>
     <link rel="stylesheet" href="styles.css"> 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    
     <style>
-        /* 保持原有样式，新增/修改以下部分 */
         html, body {
             width: 100%; height: 100%; margin: 0; padding: 0;
             background-color: #E8F7F3;
             font-family: 'DotGothic16', monospace;
+            overflow-x: hidden;
         }
 
-        /* 伪装层：平时显示的欢迎页面 */
+        /* 1. 伪装层样式 */
         #welcome-screen {
             display: flex;
             flex-direction: column;
@@ -24,28 +22,30 @@
             align-items: center;
             height: 100vh;
             text-align: center;
-            cursor: default;
+            position: relative;
+            z-index: 1000;
         }
 
         #welcome-screen h1 {
             font-size: 2.5rem;
             color: #194C4F;
-            user-select: none; /* 防止频繁点击时选中文字变蓝 */
+            user-select: none;
         }
 
-        /* 密码输入弹窗：初始隐藏 */
-        #auth-screen {
+        /* 四角触发器：透明但可点击 */
+        .corner-trigger {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(25, 76, 79, 0.8); /* 半透明遮罩 */
-            z-index: 9999; 
-            display: none; /* 修改为初始隐藏 */
-            justify-content: center;
-            align-items: center;
+            width: 80px;
+            height: 80px;
+            z-index: 9999;
+            cursor: default;
         }
+        #corner-tl { top: 0; left: 0; }
+        #corner-tr { top: 0; right: 0; }
+        #corner-br { bottom: 0; right: 0; }
+        #corner-bl { bottom: 0; left: 0; }
 
-        /* 内容主容器：校验成功前隐藏 */
+        /* 2. 主容器：初始隐藏 */
         #app-container {
              display: none; 
              width: 100%; 
@@ -54,16 +54,18 @@
              align-items: center; 
         }
 
-        /* 其它原有样式保持不变... */
-        .auth-box {
-            background-color: #FFFFFF;
-            padding: 30px;
-            border: 4px solid #194C4F;
-            box-shadow: 8px 8px 0 #5EAFB0;
-        }
         main { width: 90%; max-width: 800px; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; }
-        .logout-btn { background-color: #ff9999; font-size: 0.7rem; padding: 5px 10px; }
+        .logout-btn { background-color: #ff9999; border: 2px solid #194C4F; font-size: 0.7rem; padding: 5px 10px; cursor: pointer; }
+        
+        /* 纪念日特有样式 */
+        .add-anniv-form { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+        .anniv-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; border-bottom: 2px dashed #5EAFB0;
+            background: rgba(255,255,255,0.5); margin-bottom: 5px;
+        }
+        .days-tag { background: #FFD1DC; padding: 2px 8px; border: 1px solid #194C4F; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -71,27 +73,21 @@
     <div id="pixel-background"></div>
 
     <div id="welcome-screen">
-        <h1 id="secret-trigger">💖 好好小家 💖</h1>
+        <div id="corner-tl" class="corner-trigger"></div>
+        <div id="corner-tr" class="corner-trigger"></div>
+        <div id="corner-br" class="corner-trigger"></div>
+        <div id="corner-bl" class="corner-trigger"></div>
+
+        <h1>💖 好好小家 💖</h1>
         <p>每一个像素，都是我们的故事</p>
         <p style="font-size: 0.8rem; color: #999; margin-top: 50px;">© 2025 记录爱与时光</p>
-    </div>
-
-    <div id="auth-screen">
-        <div class="auth-box">
-            <h3>🔐 输入暗号进入小屋</h3>
-            <input type="password" id="secret-password-input" class="pixel-input" placeholder="我们的纪念日？">
-            <div style="margin-top: 15px;">
-                <button onclick="checkPassword()" class="pixel-btn primary-btn">确定</button>
-                <button onclick="hideAuth()" class="pixel-btn sm-btn">取消</button>
-            </div>
-        </div>
     </div>
 
     <div id="app-container"> 
         <header class="pixel-border">
             <div class="header-top">
                 <h1>🏠 我们的主页</h1>
-                <button onclick="logout()" class="pixel-btn logout-btn">退出</button>
+                <button onclick="logout()" class="pixel-btn logout-btn">退出并锁定</button>
             </div>
             <nav>
                 <a href="index.html" class="nav-item pixel-btn">主页</a>
@@ -102,63 +98,99 @@
 
         <main>
             <section id="counter" class="pixel-box">
-                <h2>⏳ 在一起已经...</h2>
-                <div id="days" class="days-count">000</div>天
+                <h2>⏳ 我们在一起已经...</h2>
+                <div id="days" class="days-count" style="font-size: 3rem; color: #5EAFB0; font-weight: bold;">000</div>
+                <p>天</p>
             </section>
-            </main>
+
+            <section id="anniversary-manager" class="pixel-box">
+                <h2>📅 纪念日倒数清单</h2>
+                <div class="add-anniv-form">
+                    <input type="text" id="anniv-name" placeholder="想倒数的事..." class="pixel-input">
+                    <input type="date" id="anniv-date" class="pixel-input">
+                    <button onclick="addAnniversary()" class="pixel-btn primary-btn">添加</button>
+                </div>
+                <div id="anniv-list"></div>
+            </section>
+
+            <section id="message-board" class="pixel-box">
+                <h2>✉️ 悄悄话信箱</h2>
+                <div class="message-input-area">
+                    <textarea id="message-input" placeholder="留下一句今天的甜蜜..." class="pixel-input"></textarea>
+                    <div class="msg-controls" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                        <div class="author-selector">
+                            <label><input type="radio" name="msg-author" value="me" checked> 💖 我</label>
+                            <label><input type="radio" name="msg-author" value="other"> 💙 对方</label>
+                        </div>
+                        <button onclick="postMessage()" class="pixel-btn primary-btn">发送</button>
+                    </div>
+                </div>
+                <div id="messages-container" class="msg-list-container"></div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 专属我们两人的像素小家 | 2025</p>
+        </footer>
     </div>
     
     <script>
-        // --- 核心隐藏逻辑 ---
-        let clickCount = 0;
-        const trigger = document.getElementById('secret-trigger');
-        const authScreen = document.getElementById('auth-screen');
-        const appContainer = document.getElementById('app-container');
-        const welcomeScreen = document.getElementById('welcome-screen');
+        // --- 1. 四角解锁逻辑 ---
+        let sequence = [];
+        const targetSequence = ['tl', 'tr', 'br', 'bl']; // 左上, 右上, 右下, 左下
 
-        trigger.onclick = () => {
-            clickCount++;
-            if (clickCount >= 5) {
-                authScreen.style.display = 'flex';
-                clickCount = 0; 
-            }
-        };
+        document.querySelectorAll('.corner-trigger').forEach(el => {
+            el.onclick = () => {
+                const corner = el.id.split('-')[1];
+                sequence.push(corner);
+                
+                // 检查顺序
+                if (sequence[sequence.length - 1] !== targetSequence[sequence.length - 1]) {
+                    sequence = []; // 错一个就重置
+                    return;
+                }
 
-        function hideAuth() {
-            authScreen.style.display = 'none';
-            clickCount = 0;
-        }
-        
-        function checkPassword() {
-            const input = document.getElementById('secret-password-input').value;
-            
-            const secureHash = "12433bd91f20eebc4c771be5be93b02bf9d6a0e618bb7bfedb9aee9c601ccc2b";
-            
-            const inputHash = CryptoJS.SHA256(input).toString();
+                if (sequence.length === targetSequence.length) {
+                    enterHouse();
+                    sequence = [];
+                }
+            };
+        });
 
-            if (inputHash === secureHash) {
-                sessionStorage.setItem('isAuthed', 'true'); 
-                showApp();
-            } else {
-                alert("暗号不对哦，再想想？");
-            }
+        // --- 2. 恋爱天数计算 ---
+        function updateDays() {
+            const daysElement = document.getElementById('days');
+            if (!daysElement) return;
+            const startDate = new Date("2025-09-19"); // 这里改你们的日期
+            const today = new Date();
+            const diff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+            daysElement.innerText = diff > 0 ? diff : 0;
         }
 
-        function showApp() {
-            welcomeScreen.style.display = 'none';
-            authScreen.style.display = 'none';
-            appContainer.style.display = 'flex';
-            if (window.initApp) window.initApp(); 
+        // --- 3. 页面切换逻辑 ---
+        function enterHouse() {
+            sessionStorage.setItem('isHomeOpen', 'true');
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('app-container').style.display = 'flex';
+            updateDays();
+            // 触发 script.js 里的初始化函数（读取留言和纪念日）
+            if (typeof init === 'function') {
+                init(); 
+            } else if (window.loadAnniversaries) {
+                window.loadAnniversaries();
+                window.loadMessages();
+            }
         }
 
         function logout() {
-            sessionStorage.removeItem('isAuthed');
+            sessionStorage.removeItem('isHomeOpen');
             location.reload();
         }
 
+        // --- 4. 自动检查状态 ---
         window.onload = () => {
-            if (sessionStorage.getItem('isAuthed') === 'true') {
-                showApp();
+            if (sessionStorage.getItem('isHomeOpen') === 'true') {
+                enterHouse();
             }
         };
     </script>
