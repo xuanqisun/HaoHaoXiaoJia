@@ -9,47 +9,51 @@
     <link rel="stylesheet" href="diary.css"> 
 </head>
 <body>
+    <div id="pixel-background"></div>
+
     <header class="pixel-border"> 
         <h1>📖 我们的回忆卡片 💖</h1>
         <nav>
             <a href="index.html" class="pixel-btn">主页</a>
             <a href="memories.html" class="pixel-btn">回忆录</a>
-            <a href="quests.html" class="pixel-btn">甜蜜任务</a>
+            <a href="quests.html" class="pixel-btn">小任务</a>
         </nav>
     </header>
 
     <main class="diary-main">
         <div id="card-view">
             <div id="card-stack-container">
-                
-                <div class="diary-card card-cover" data-page-index="-1"> 
+                <div class="diary-card card-cover"> 
                     <div class="card-content">
-                        <h2>💌 我们的专属回忆录 </h2>
-                        <p>记录生活中的点滴甜蜜。</p>
-                        <p>请点击 **下一页** 翻开封面，开始查阅日记吧！</p>
+                        <h2>💌 我们的专属日记本 </h2>
+                        <p>心有灵犀一点通</p>
+                        <br>
+                        <p>请点击下方 “下一页” </p>
+                        <p>翻开封面，开始查阅日记吧！</p>
                     </div>
                 </div>
                 
-                <div class="diary-card card-end" data-page-index="end">
+                <div class="diary-card card-end">
                     <div class="card-content">
                         <h3>翻完了！</h3>
-                        <p>你已经翻阅了所有的甜蜜回忆。点击右下角的 ✏️ 按钮，创建新的甜蜜吧！</p>
+                        <p>你已经翻阅了所有的甜蜜回忆。</p>
+                        <p>点击右下角的 ✏️ 按钮，创建新的甜蜜吧！</p>
                     </div>
                 </div>
-
             </div>
             
             <div class="controls">
-                <button id="prev-btn" class="pixel-btn" disabled>上一页</button>
+                <button id="prev-btn" class="pixel-btn">上一页</button>
                 <button id="next-btn" class="pixel-btn primary-btn">下一页</button>
             </div>
         </div>
         
-        <div id="summary-panel">
+        <div id="summary-panel" style="display: none;">
             </div>
     </main>
     
-    <button id="toggle-view-btn" title="切换视图">📖 索引模式</button>
+    <button id="toggle-view-btn" class="pixel-btn">📖 索引模式</button>
+    <button id="new-diary-btn" title="写一篇新日记">✏️</button> 
     
     <div id="diary-modal" class="modal">
         <div class="modal-content">
@@ -57,42 +61,47 @@
             <h3 id="modal-title">写下新的甜蜜日记 ✍️</h3>
             
             <div class="input-group">
-                日期: <input type="date" id="diary-date">
-                天气: <input type="text" id="diary-weather" placeholder="晴天/多云/雨">
+                日期: <input type="date" id="diary-date" class="pixel-input">
+                天气: <input type="text" id="diary-weather" placeholder="晴天/多云/雨" class="pixel-input">
             </div>
             
-            <textarea id="diary-content" placeholder="记录今天发生的美好事情..."></textarea>
+            <textarea id="diary-content" class="pixel-input" placeholder="记录今天发生的美好事情..."></textarea>
+            
             <div class="image-upload-section">
-                <label for="diary-image-input" class="pixel-btn sm-btn" style="cursor: pointer;">
+                <label for="diary-image-input" class="pixel-btn sm-btn" style="cursor: pointer; display: inline-block; margin: 10px 0;">
                     📷 添加一张照片
                 </label>
                 <input type="file" id="diary-image-input" accept="image/*" style="display: none;">
                 
                 <div id="image-preview-container" style="display: none; margin-top: 10px; position: relative; width: fit-content;">
-                    <img id="image-preview" src="" alt="预览" style="max-width: 150px; border: 2px solid #3E8E8E;">
-                    <span id="remove-image-btn" style="position: absolute; top: -10px; right: -10px; background: #ff6b6b; color: white; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px; cursor: pointer; border: 2px solid #fff;">&times;</span>
+                    <img id="image-preview" src="" alt="预览" style="max-width: 120px; border: 2px solid var(--color-medium-green);">
+                    <span id="remove-image-btn" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 18px; height: 18px; text-align: center; line-height: 18px; cursor: pointer; font-size: 12px;">&times;</span>
                 </div>
             </div>
 
             <div class="settings-group">
                 <div class="setting-item">
                     <span class="label">落款人:</span>
-                    <label class="pink-label">
-                        <input type="radio" name="signature-color" value="粉色落款" checked> 💖 我
-                    </label>
-                    <label class="blue-label">
-                        <input type="radio" name="signature-color" value="蓝色落款"> 💙 对方
-                    </label>
+                    <div class="radio-options">
+                        <label class="pink-label">
+                            <input type="radio" name="signature-color" value="粉色落款" checked> 💖 我
+                        </label>
+                        <label class="blue-label">
+                            <input type="radio" name="signature-color" value="蓝色落款"> 💙 对方
+                        </label>
+                    </div>
                 </div>
                 
                 <div class="setting-item">
                     <span class="label">权限:</span>
-                    <label class="green-label">
-                        <input type="radio" name="privacy-level" value="public" checked> 👀 允许对方看
-                    </label>
-                    <label class="red-label">
-                        <input type="radio" name="privacy-level" value="private"> 🔒 仅自己可见
-                    </label>
+                    <div class="radio-options">
+                        <label class="green-label">
+                            <input type="radio" name="privacy-level" value="public" checked> 👀 公开
+                        </label>
+                        <label class="red-label">
+                            <input type="radio" name="privacy-level" value="private"> 🔒 私密
+                        </label>
+                    </div>
                 </div>
             </div>
     
@@ -100,7 +109,9 @@
         </div>
     </div>
 
-    <button id="new-diary-btn" title="写一篇新日记">✏️</button> 
+    <footer>
+        <p>© 我们的专属回忆录 | 记录每一份心动</p>
+    </footer>
 
     <script src="diary.js"></script>
 </body>

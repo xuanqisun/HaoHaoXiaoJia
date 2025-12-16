@@ -1,532 +1,250 @@
-/* 引入主页的蓝绿和像素主题变量/样式 */
-/* 注意：这里假设 styles.css 中定义了 .pixel-box, .pixel-btn 等样式，
-        但为了让 diary.css 独立工作，我们将一些关键像素化定义放在这里 */
+/* * 📖 好好小家 - 回忆录/日记本样式表 (横格纸张像素风完整版)
+ */
 
-/* --- 全局主题统一 --- */
-/* 注意：如果主页的 styles.css 已经加载，下面的重复定义可以删除，
-        但为确保本页独立渲染正确，暂时保留核心样式。 */
-        :root {
-            --color-dark-green: #194C4F;
-            --color-medium-green: #3E8E8E;
-            --color-light-green: #B4DFD9;
-            --color-warm-orange: #E68A47;
-            --color-pixel-shadow: #5EAFB0;
-            --color-background-light: #E8F7F3;
-        }
-        
-        body {
-            /* 继承主页的字体和背景 */
-            font-family: 'DotGothic16', monospace; 
-            color: var(--color-dark-green);
-            background-color: var(--color-background-light); 
-        }
-        
-        /* --- 核心容器样式 --- */
-        .diary-main {
-            display: flex;
-            justify-content: center;
-            padding: 30px 20px; /* 调整 padding，给 header 留出空间 */
-            gap: 40px; 
-        }
-        
-        /* 卡片堆叠的容器 */
-        #card-stack-container {
-            width: 600px; 
-            height: 450px; 
-            position: relative;
-            margin: 50px 0 50px 0; 
-        }
-        
-        /* 单个回忆卡片的样式 - 像素化和田园治愈感 */
-        .diary-card {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            
-            /* 像素化边框和阴影 */
-            border: 4px solid var(--color-medium-green); 
-            box-shadow: 6px 6px 0 var(--color-pixel-shadow); 
-            background-color: #FAFFFC; /* 治愈浅白绿 */
-            border-radius: 0; /* 保持方形像素感 */
-            transition: transform 0.6s ease-in-out, opacity 0.6s; 
-            cursor: default;
-            
-            transform: rotateX(0deg) scale(0.98); 
-            z-index: 1; /* 确保所有卡片都在封面之上 */
-        }
-        
-        /* 封面卡片样式 */
-        .diary-card.card-cover {
-            background-color: #92C9B4; /* 治愈绿封面 */
-            color: var(--color-dark-green);
-            z-index: 200; 
-            text-align: center;
-            padding-top: 100px; 
-            box-sizing: border-box;
-        }
-        .diary-card.card-cover h2 {
-            font-size: 2.5em;
-            color: var(--color-warm-orange); /* 暖色调强调 */
-            text-shadow: 2px 2px 0 var(--color-dark-green);
-            margin-bottom: 20px;
-        }
-        .diary-card.card-cover p {
-            font-size: 1.2em;
-        }
-        
-        
-        /* 最后的提示卡片样式 */
-        .diary-card.card-end {
-            background-color: #FFC48C; /* 甜蜜橘色 */
-            color: var(--color-dark-green);
-            text-align: center;
-            padding-top: 150px;
-            box-sizing: border-box;
-            z-index: 0; 
-        }
-        
-        /* 向上翻走/揭开的效果 */
-        .flipped {
-            transform: translateY(-100%) rotateX(15deg) scale(1.05); 
-            opacity: 0; 
-            pointer-events: none; 
-        }
-        
-        /* 卡片内容排版 */
-        .card-content {
-            padding: 20px;
-            height: calc(100% - 40px);
-            overflow-y: auto;
-            /* 取消虚线边框，保持简洁 */
-            border: none; 
-            background-color: transparent; 
-        }
-        
-        .diary-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding-bottom: 5px;
-            /* 像素化分隔线 */
-            border-bottom: 3px dashed var(--color-light-green); 
-        }
-        
-        .diary-body {
-            min-height: 150px;
-            line-height: 1.8;
-            color: #333;
-            white-space: pre-wrap;
-        }
-        
-        .signature {
-            text-align: right;
-            margin-top: 20px;
-            font-style: normal; /* 取消斜体 */
-            color: var(--color-warm-orange); /* 签名使用暖色 */
-            text-shadow: 1px 1px 0 #fff;
-        }
-        
-        
-        /* --- 索引面板样式 --- */
-        
-        #summary-panel {
-            width: 300px;
-            min-height: 500px;
-            background-color: #FFFFFF;
-            padding: 20px;
-            overflow-y: auto;
-            display: none; 
-            
-            /* 像素化边框和阴影 */
-            border: 4px solid var(--color-medium-green); 
-            box-shadow: 6px 6px 0 var(--color-pixel-shadow);
-            border-radius: 0; 
-        }
-        
-        #summary-panel h2 {
-            color: var(--color-dark-green);
-            border-bottom: 4px solid var(--color-light-green);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 0 var(--color-light-green);
-        }
-        
-        .month-group {
-            margin-bottom: 20px;
-        }
-        .month-group h3 {
-            color: var(--color-medium-green); 
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            /* 像素化标记 */
-            border-left: 5px solid var(--color-medium-green);
-            padding-left: 10px;
-        }
-        .day-entry {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-        .day-label {
-            font-weight: bold;
-            width: 40px;
-            color: var(--color-warm-orange);
-            margin-right: 10px;
-        }
-        .diary-tag {
-            padding: 4px 10px;
-            border-radius: 0; /* 像素化方角 */
-            font-size: 0.9em;
-            color: white;
-            cursor: pointer;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 200px;
-            border: 2px solid rgba(0,0,0,0.2); /* 标签的像素边框 */
-            box-shadow: 1px 1px 0 rgba(0,0,0,0.2);
-        }
-        
-        /* 标签颜色 (保持与落款一致的颜色区分) */
-        .tag-pink {
-            background-color: #FF69B4; 
-        }
-        .tag-blue {
-            background-color: #4169E1; 
-        }
-        
-        
-        /* --- 模态窗口样式 --- */
-        
-        .modal {
-            /* 保持居中覆盖 */
-            display: none; 
-            position: fixed; 
-            z-index: 2000; 
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(232, 247, 243, 0.8); /* 使用浅背景色调的半透明 */
-            align-items: center; 
-            justify-content: center; 
-        }
-        .modal-content {
-            background-color: #FFFFFF; 
-            padding: 30px;
-            width: 80%;
-            max-width: 500px; 
-            position: relative;
-            animation-name: animatetop;
-            animation-duration: 0.4s;
-            
-            /* 像素化模态框 */
-            border: 4px solid var(--color-dark-green); 
-            box-shadow: 8px 8px 0 var(--color-medium-green);
-            border-radius: 0; 
-        }
-        .close-btn {
-            color: var(--color-dark-green);
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            transition: color 0.3s;
-        }
-        .close-btn:hover, .close-btn:focus {
-            color: var(--color-warm-orange);
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .modal-content h3 {
-            color: var(--color-dark-green);
-            margin-bottom: 20px;
-            text-shadow: 1px 1px 0 var(--color-light-green);
-        }
-        /* 输入框/文本域使用像素输入框样式 */
-        .modal-content input[type="date"],
-        .modal-content input[type="text"] {
-            flex-grow: 1;
-            padding: 8px;
-            border: 3px solid var(--color-medium-green);
-            border-radius: 0;
-            box-shadow: 2px 2px 0 var(--color-light-green);
-            font-family: 'DotGothic16', monospace;
-        }
-        .modal-content #diary-content {
-            height: 150px;
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box; 
-            border: 3px solid var(--color-medium-green);
-            border-radius: 0;
-            resize: none;
-            margin-top: 15px; 
-            margin-bottom: 15px;
-            font-family: 'DotGothic16', monospace;
-        }
-        
-        /* 落款按钮组样式 - 像素化标签 */
-        .signature-group {
-            margin-top: 15px;
-            justify-content: flex-start; 
-            font-weight: bold;
-        }
-        .signature-group label {
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 0; 
-            transition: background-color 0.2s;
-            border: 2px solid var(--color-dark-green);
-            box-shadow: 1px 1px 0 var(--color-medium-green);
-            background-color: #fff;
-        }
-        .signature-group .pink-label:hover {
-            background-color: #ffe4e8;
-        }
-        .signature-group .blue-label:hover {
-            background-color: #e0e9ff;
-        }
-        .signature-group input[type="radio"] {
-            margin-right: 5px;
-        }
-        
-        
-        /* --- 控制按钮样式 --- */
-        
-        .controls {
-            margin-top: 20px;
-        }
-        /* 使用主页的像素按钮样式 */
-        .controls button {
-            display: inline-block;
-            padding: 8px 15px;
-            margin: 0 10px;
-            cursor: pointer;
-            background-color: #92C9B4; /* 治愈绿按钮 */
-            color: var(--color-dark-green);
-            border: 3px solid var(--color-dark-green);
-            box-shadow: 2px 2px 0 var(--color-medium-green);
-            text-transform: uppercase;
-            transition: all 0.1s;
-            border-radius: 0;
-        }
-        .controls button:hover:not(:disabled) {
-            background-color: #6AA58C;
-        }
-        .controls button:active:not(:disabled) {
-            transform: translate(2px, 2px);
-            box-shadow: none;
-        }
-        .controls button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-            color: #666;
-            box-shadow: none;
-        }
-        
-        
-        /* 浮动的“写日记”按钮样式 */
-        #new-diary-btn {
-            position: fixed; 
-            bottom: 30px;
-            right: 30px;
-            background-color: var(--color-warm-orange); 
-            color: white;
-            border: 4px solid var(--color-dark-green); 
-            border-radius: 0; 
-            width: 60px;
-            height: 60px;
-            font-size: 30px;
-            line-height: 60px;
-            text-align: center;
-            cursor: pointer;
-            box-shadow: 4px 4px 0 var(--color-medium-green);
-            z-index: 1000; 
-            transition: all 0.2s;
-        }
-        
-        #new-diary-btn:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0 var(--color-medium-green);
-        }
-        #new-diary-btn:active {
-            transform: translate(2px, 2px);
-            box-shadow: none;
-        }
-        
-        /* 切换视图按钮 */
-        #toggle-view-btn {
-            position: fixed;
-            bottom: 100px;
-            right: 30px;
-            background-color: var(--color-medium-green);
-            color: white;
-            border: 3px solid var(--color-dark-green);
-            border-radius: 0;
-            padding: 10px 15px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 2px 2px 0 var(--color-dark-green);
-            z-index: 1000;
-            transition: all 0.2s;
-        }
-        #toggle-view-btn:hover {
-            background-color: #5f9ea0;
-        }
-        #toggle-view-btn:active {
-            transform: translate(2px, 2px);
-            box-shadow: none;
-        }
-        /* 模态窗口内的设置组 */
-.settings-group {
-    display: flex;
-    justify-content: space-between;
-    margin: 15px 0;
-    border-top: 2px dashed #eee;
-    padding-top: 10px;
+ :root {
+    --color-dark-green: #194C4F;
+    --color-medium-green: #3E8E8E;
+    --color-light-green: #B4DFD9;
+    --color-warm-orange: #E68A47;
+    --color-pixel-shadow: #5EAFB0;
+    --color-background-light: #E8F7F3;
+    --paper-line-color: rgba(180, 223, 217, 0.5); /* 虚线颜色 */
 }
 
-.setting-item {
+body {
+    font-family: 'DotGothic16', monospace; 
+    color: var(--color-dark-green);
+    background-color: var(--color-background-light); 
+}
+
+/* --- 核心容器 --- */
+.diary-main {
+    display: flex;
+    justify-content: center;
+    padding: 30px 20px;
+    gap: 40px; 
+}
+
+#card-stack-container {
+    width: 600px; 
+    height: 500px; 
+    position: relative;
+    margin: 20px 0; 
+}
+/* --- 模态窗口基础：让它浮动在最上层 --- */
+.modal {
+    display: none; /* 初始必须隐藏 */
+    position: fixed; 
+    z-index: 9999; /* 确保它在所有卡片和按钮之上 */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(25, 76, 79, 0.6); /* 深绿色的半透明背景，更有质感 */
+    
+    /* 使用 flex 布局让里面的内容居中 */
+    align-items: center; 
+    justify-content: center; 
+    backdrop-filter: blur(4px); /* 背景模糊，更有像素风氛围 */
+}
+
+/* 弹窗主体 */
+.modal-content {
+    background-color: #FFFFFF; 
+    padding: 30px;
+    width: 90%;
+    max-width: 450px; 
+    border: 4px solid var(--color-dark-green); 
+    box-shadow: 10px 10px 0 var(--color-medium-green);
+    position: relative; /* 为了定位右上角的关闭按钮 */
+    animation: pixelPopup 0.3s ease-out; /* 弹出来的动画 */
+}
+
+/* 弹出动画 */
+@keyframes pixelPopup {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* 右上角关闭按钮 */
+.close-btn {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--color-dark-green);
+}
+
+.close-btn:hover {
+    color: var(--color-warm-orange);
+}
+/* --- 像素质感卡片核心 (横格纸) --- */
+.diary-card {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 30px;
+    box-sizing: border-box;
+    
+    /* 像素边框和纸张底色 */
+    border: 4px solid var(--color-dark-green); 
+    box-shadow: 8px 8px 0 var(--color-pixel-shadow); 
+    background-color: #fffef0; /* 暖白纸张感 */
+    
     display: flex;
     flex-direction: column;
-    gap: 5px;
-}
-
-.setting-item .label {
-    font-size: 0.8rem;
-    color: #666;
-    font-weight: bold;
-}
-
-/* 按钮样式 */
-.card-actions {
-    margin-top: 10px;
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-}
-
-.edit-btn, .delete-btn {
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-size: 0.8rem;
-    text-decoration: underline;
-    font-family: 'DotGothic16', monospace;
-}
-
-.edit-btn { color: #5EAFB0; }
-.delete-btn { color: #ff6b6b; }
-
-/* 隐私标签 */
-.privacy-tag {
-    display: inline-block;
-    background: #f0f0f0;
-    color: #888;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    margin-bottom: 5px;
-}
-
-.diary-footer {
-    border-top: 1px dashed #ccc;
-    padding-top: 10px;
-    margin-top: 10px;
-}
-/* --- 日记卡片内的图片显示优化 --- */
-
-.diary-img-wrapper {
-    width: 100%;           /* 宽度铺满卡片内容区 */
-    max-width: 280px;      /* 限制最大宽度，防止横向过大 */
-    aspect-ratio: 4 / 3;   /* 📸 强制维持 4:3 的黄金比例 (也可以改成 1/1 变成正方形) */
-    margin: 10px auto;     /* 居中显示，与文字留出间距 */
+    transition: transform 0.5s ease, opacity 0.5s;
     
-    border: 3px solid var(--color-dark-green); /* 像素边框 */
-    box-shadow: 3px 3px 0 var(--color-light-green);
-    background-color: #eee; /* 图片未加载时的占位色 */
-    overflow: hidden;      /* 关键：隐藏超出比例的部分 */
+    /* 🎨 关键：生成像素虚线横栏 */
+    background-image: linear-gradient(var(--paper-line-color) 1px, transparent 1px);
+    background-size: 100% 2.5rem; /* 每一行的高度 */
+}
+
+/* 装饰：本子左侧的装订孔感 */
+.diary-card::before {
+    content: "";
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    border-left: 4px dotted var(--color-medium-green);
+    opacity: 0.3;
+}
+
+/* 特殊卡片：封面和封底 */
+.card-cover { background-color: #92C9B4 !important; background-image: none !important; z-index: 10; justify-content: center; align-items: center; text-align: center; }
+.card-end { background-color: #FFC48C !important; background-image: none !important; justify-content: center; align-items: center; text-align: center; }
+
+/* --- 卡片内部排版 --- */
+.card-content {
+    width: 100%;
+    height: 100%;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 15px;
+    line-height: 1.5; /* 标题行高不受横线限制 */
+    font-size: 1rem;
+    border-bottom: 2px solid var(--color-dark-green);
+    padding-bottom: 5px;
+}
+
+.card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 水平居中 */
+    justify-content: center; /* 垂直居中 */
+    width: 100%;
+}
+
+/* 让日记文字对齐虚线 */
+.card-body .text {
+    width: 100%;
+    line-height: 2.5rem; /* 必须与 background-size 一致 */
+    text-align: left;
+    font-size: 1.1rem;
+    color: #444;
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin: 0;
+}
+
+/* 图片包装器 */
+.diary-img-wrapper {
+    width: 100%;
+    max-width: 250px;
+    aspect-ratio: 4 / 3;
+    margin: 10px auto; 
+    border: 3px solid var(--color-dark-green);
+    overflow: hidden;
+    background-color: #eee;
+    flex-shrink: 0; /* 防止图片被压缩 */
 }
 
 .diary-photo {
     width: 100%;
     height: 100%;
-    /* 核心属性：等比例缩放并填满容器，多余部分自动裁剪 */
-    object-fit: cover; 
-    
-    /* 如果你希望看到完整图片（不裁剪）但留白，可以改成：
-       object-fit: contain; 
-       background-color: #000; 
-    */
-    
-    image-rendering: pixelated; /* 保持像素风（可选） */
-    transition: transform 0.3s ease;
-}
-
-/* 鼠标悬停在图片上时轻微放大，增加互动感 */
-.diary-img-wrapper:hover .diary-photo {
-    transform: scale(1.05);
-}
-/* 写日记弹窗里的预览图限制 */
-#image-preview {
-    max-width: 100px !important; /* 限制预览图非常小，不影响写字 */
-    max-height: 100px !important;
     object-fit: cover;
-    border: 2px solid var(--color-medium-green);
 }
 
-/* 适配移动端 */
-@media screen and (max-width: 768px) {
-    .diary-img-wrapper {
-        max-width: 100%;    /* 手机端宽度占满 */
-        aspect-ratio: 16 / 9; /* 手机端可以稍微扁一点，给文字留空间 */
-    }
+/* --- 卡片页脚：删除按钮和落款 --- */
+.card-footer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* 左右分布 */
+    align-items: flex-end;
+    margin-top: 10px;
+    line-height: 1.5; /* 页脚不被横线干扰 */
 }
 
+.delete-diary-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    opacity: 0.3;
+    transition: 0.2s;
+    padding: 5px;
+}
+.delete-diary-btn:hover { opacity: 1; transform: scale(1.2); }
 
-/* --- 移动端适配 (响应式) --- */
-@media screen and (max-width: 768px) {
-    .diary-main {
-        padding: 10px; /* 减小内边距 */
-    }
+.signature {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+.pink-text { color: #FF69B4; }
+.blue-text { color: #4169E1; }
 
-    #card-stack-container {
-        width: 100%; /* 宽度占满屏幕 */
-        max-width: 350px; /* 但最大不超过 350px */
-        height: 500px; /* 高度适当拉长以容纳内容 */
-        margin: 20px auto; /* 居中 */
-    }
-
-    .diary-card.card-cover h2 {
-        font-size: 1.8em; /* 缩小标题字体 */
-    }
-    
-    /* 调整按钮位置，防止遮挡内容 */
-    #new-diary-btn {
-        bottom: 20px;
-        right: 20px;
-        width: 50px;
-        height: 50px;
-        line-height: 50px;
-        font-size: 24px;
-    }
-    
-    #toggle-view-btn {
-        bottom: 80px;
-        right: 20px;
-        padding: 8px 10px;
-    }
+/* --- 索引面板 (Summary) --- */
+#summary-panel {
+    width: 350px;
+    padding: 20px;
+    background: #fff;
+    border: 4px solid var(--color-dark-green);
+    box-shadow: 6px 6px 0 var(--color-pixel-shadow);
 }
 
-/* 移动端适配：手机上图片可以稍微高一点 */
+.summary-item {
+    padding: 10px;
+    border: 2px solid var(--color-light-green);
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* --- 悬浮按钮 --- */
+#new-diary-btn {
+    position: fixed; bottom: 30px; right: 30px;
+    background-color: var(--color-warm-orange);
+    color: white; border: 4px solid var(--color-dark-green);
+    width: 60px; height: 60px; font-size: 30px;
+    cursor: pointer; box-shadow: 4px 4px 0 var(--color-medium-green);
+    z-index: 1000;
+}
+
+#toggle-view-btn {
+    position: fixed; bottom: 100px; right: 30px;
+    background-color: var(--color-medium-green);
+    color: white; border: 3px solid var(--color-dark-green);
+    padding: 10px 15px; cursor: pointer;
+    z-index: 1000;
+}
+
+/* --- 适配移动端 --- */
 @media screen and (max-width: 768px) {
-    .diary-photo {
-        max-height: 150px;
-    }
+    .diary-main { flex-direction: column; align-items: center; }
+    #card-stack-container { width: 95vw; height: 500px; }
+    .diary-card { padding: 15px; }
+    .diary-img-wrapper { max-width: 180px; }
 }

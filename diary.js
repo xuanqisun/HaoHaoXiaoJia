@@ -1,165 +1,271 @@
 /**
- * 📝 好好小家 - 小任务核心逻辑 (完整增强版)
- * 包含：任务加载、渲染、新增、修改、完成/撤回切换、彻底删除
+ * 📖 好好小家 - 回忆录核心逻辑 (完整修正版)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- 1. DOM 元素获取 ---
-    const todoListContainer = document.getElementById('todo-list');
-    const doneListContainer = document.getElementById('done-list');
-    const addQuestBtn = document.getElementById('add-quest-btn');
-    const modal = document.getElementById('quest-modal');
+    // --- 1. 获取 DOM 元素 ---
+    const cardStack = document.getElementById('card-stack-container');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const toggleViewBtn = document.getElementById('toggle-view-btn');
+    const cardView = document.getElementById('card-view');
+    const summaryPanel = document.getElementById('summary-panel');
+    const modal = document.getElementById('diary-modal');
+    const newDiaryBtn = document.getElementById('new-diary-btn');
     const closeBtn = document.querySelector('.close-btn');
-    const saveQuestBtn = document.getElementById('save-quest-btn');
-    const modalTitle = document.getElementById('modal-title');
+    const saveBtn = document.getElementById('save-diary');
+    
+    // 图片相关
+    const imgInput = document.getElementById('diary-image-input');
+    const imgPreview = document.getElementById('image-preview');
+    const imgPreviewContainer = document.getElementById('image-preview-container');
+    const removeImgBtn = document.getElementById('remove-image-btn');
 
-    // --- 2. 状态变量 ---
-    let quests = loadQuests();
-    let editingId = null; 
+    // 数据加载
+    let diaries = JSON.parse(localStorage.getItem('xiaojiaDiaries') || '[]');
+    let currentPage = 0; // 0 是封面
 
-    // --- 3. 数据持久化 ---
-    function loadQuests() {
-        const stored = localStorage.getItem('xiaojiaQuests');
-        return stored ? JSON.parse(stored) : [];
+    // --- 2. 初始化渲染 ---
+    function init() {
+        renderCards();
+        bindEvents();
     }
 
-    function saveAndRefresh() {
-        localStorage.setItem('xiaojiaQuests', JSON.stringify(quests));
-        renderQuests();
-    }
+    // 渲染日记卡片
+    function renderCards() {
+        // 查找封面和封底（如果 HTML 中已经存在，直接克隆或引用）
+        // 这里为了逻辑简单，每次直接生成封面和封底
+        cardStack.innerHTML = '';
 
-    // --- 4. 渲染逻辑 ---
-    function renderQuests() {
-        todoListContainer.innerHTML = '';
-        doneListContainer.innerHTML = '';
+        // 1. 生成封面
+        const cover = document.createElement('div');
+        cover.className = 'diary-card card-cover';
+        cover.innerHTML = `
+            <div class="card-content">
+                <h2>💌 我们的专属日记本</h2>
+                <p>心有灵犀一点通</p>
+                <br>
+                <p>请点击下方 “下一页” </p>
+                <p>翻开封面，开始查阅日记吧！</p>
+            </div>`;
+        cardStack.appendChild(cover);
 
-        // 排序：最新的排在前面
-        const sortedQuests = [...quests].sort((a, b) => b.id - a.id);
-
-        sortedQuests.forEach(quest => {
-            const questEl = document.createElement('div');
-            // 如果完成了，添加 completed 类名
-            questEl.className = `quest-item ${quest.completed ? 'completed' : ''}`;
+        // 2. 循环生成日记页 (按日期排序)
+        diaries.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach((diary, index) => {
+            const card = document.createElement('div');
+            card.className = 'diary-card';
             
-            const proposerClass = quest.proposer === '我' ? 'me' : 'other';
-            
-            // 动态生成操作按钮
-            let actionButtons = '';
-            if (quest.completed) {
-                // 已完成状态：显示“撤回”和“彻底删除”
-                actionButtons = `
-                    <div class="quest-actions">
-                        <button class="action-btn undo-btn" onclick="toggleQuest(${quest.id})" title="撤回到待办">↩️</button>
-                        <button class="action-btn delete-btn" onclick="deleteQuest(${quest.id})" title="彻底删除">🗑️</button>
-                    </div>`;
-            } else {
-                // 未完成状态：显示“完成”、“修改”、“删除”
-                actionButtons = `
-                    <div class="quest-actions">
-                        <button class="action-btn complete-btn" onclick="toggleQuest(${quest.id})" title="标记完成">✅</button>
-                        <button class="action-btn edit-btn" onclick="openEditQuest(${quest.id})" title="修改内容">✏️</button>
-                        <button class="action-btn delete-btn" onclick="deleteQuest(${quest.id})" title="删除任务">🗑️</button>
-                    </div>`;
-            }
+            let imgHtml = diary.image ? `<div class="diary-img-wrapper"><img src="${diary.image}" class="diary-photo"></div>` : '';
 
-            questEl.innerHTML = `
-                <div class="quest-header">
-                    <span class="quest-title">${quest.title}</span>
-                    <span class="proposer-tag ${proposerClass}">${quest.proposer}提出的</span>
-                </div>
-                <p class="quest-desc">${quest.description || '暂无详细描述...'}</p>
-                <div class="quest-footer">
-                    <span class="quest-date">${new Date(quest.id).toLocaleDateString()}</span>
-                    ${actionButtons}
+            card.innerHTML = `
+                <div class="card-content">
+                    <div class="card-header">
+                        <span class="date">📅 ${diary.date}</span>
+                        <span class="weather">☁️ ${diary.weather || '好天气'}</span>
+                    </div>
+                    <div class="card-body">
+                        ${imgHtml}
+                        <p class="text">${diary.content}</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="delete-diary-btn" onclick="deleteDiary(${index})" title="撕掉这一页">🗑️</button>
+                        <div class="signature ${diary.color === '蓝色落款' ? 'blue-text' : 'pink-text'}">
+                            ${diary.color === '蓝色落款' ? '💙 对方' : '💖 我'}
+                        </div>
+                    </div>
                 </div>
             `;
-
-            if (quest.completed) {
-                doneListContainer.appendChild(questEl);
-            } else {
-                todoListContainer.appendChild(questEl);
-            }
+            cardStack.appendChild(card);
         });
 
-        // 空状态处理
-        if (todoListContainer.children.length === 0) {
-            todoListContainer.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">暂时没有小任务，快去想一个吧！</p>';
+        // 3. 生成封底
+        const end = document.createElement('div');
+        end.className = 'diary-card card-end';
+        end.innerHTML = `
+            <div class="card-content">
+                <h3>翻完了！</h3>
+                <p>你已经翻阅了所有的甜蜜回忆。</p>
+                <p>点击右下角的 ✏️ 按钮，创建新的甜蜜吧！</p>
+            </div>`;
+        cardStack.appendChild(end);
+
+        showPage(currentPage);
+    }
+
+    // --- 3. 翻页逻辑 ---
+    function showPage(index) {
+        const cards = cardStack.querySelectorAll('.diary-card');
+        // 安全检查：防止索引越界
+        if (index < 0) index = 0;
+        if (index >= cards.length) index = cards.length - 1;
+
+        cards.forEach((card, i) => {
+            card.style.display = (i === index) ? 'flex' : 'none';
+        });
+        
+        currentPage = index;
+        updateButtons(cards.length);
+    }
+
+    function updateButtons(total) {
+        if (prevBtn) prevBtn.disabled = (currentPage === 0);
+        if (nextBtn) nextBtn.disabled = (currentPage === total - 1);
+    }
+
+    // --- 4. 索引模式渲染 ---
+    function renderSummary() {
+        summaryPanel.innerHTML = '<h2>索引列表 📂</h2>';
+        const list = document.createElement('div');
+        list.className = 'summary-list';
+
+        if (diaries.length === 0) {
+            summaryPanel.innerHTML += '<p style="text-align:center; padding:20px; color:#999;">还没有日记哦...</p>';
+            return;
         }
-        if (doneListContainer.children.length === 0) {
-            doneListContainer.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">还没有解锁成就哦~</p>';
+
+        diaries.forEach((diary, index) => {
+            const item = document.createElement('div');
+            item.className = 'summary-item pixel-box';
+            item.innerHTML = `
+                <div>
+                    <strong>${diary.date}</strong>
+                    <p style="margin:5px 0; font-size:0.9rem;">${diary.content.substring(0, 15)}...</p>
+                </div>
+                <button class="pixel-btn sm-btn" onclick="jumpToPage(${index + 1})">查看</button>
+            `;
+            list.appendChild(item);
+        });
+        summaryPanel.appendChild(list);
+    }
+
+    // --- 5. 全局挂载函数 ---
+
+    // 跳转函数
+    window.jumpToPage = (index) => {
+        toggleView();
+        showPage(index);
+    };
+
+    // 删除函数
+    window.deleteDiary = function(index) {
+        if (confirm("确定要“撕掉”这页日记吗？删除后就找不回来咯！")) {
+            diaries.splice(index, 1);
+            localStorage.setItem('xiaojiaDiaries', JSON.stringify(diaries));
+            
+            // 如果删掉日记后当前页码超出范围，回退一页
+            const totalCards = diaries.length + 2; // +封面封底
+            if (currentPage >= totalCards - 1) {
+                currentPage = totalCards - 2;
+            }
+            
+            renderCards();
+            if (summaryPanel.style.display === 'block') renderSummary();
+        }
+    };
+
+    function toggleView() {
+        if (cardView.style.display !== 'none') {
+            cardView.style.display = 'none';
+            summaryPanel.style.display = 'block';
+            toggleViewBtn.textContent = '📖 卡片模式';
+            renderSummary();
+        } else {
+            cardView.style.display = 'block';
+            summaryPanel.style.display = 'none';
+            toggleViewBtn.textContent = '📖 索引模式';
         }
     }
 
-    // --- 5. 全局交互功能 ---
+    // --- 6. 事件绑定 ---
+    function bindEvents() {
+        if (nextBtn) nextBtn.onclick = () => showPage(currentPage + 1);
+        if (prevBtn) prevBtn.onclick = () => showPage(currentPage - 1);
+        if (toggleViewBtn) toggleViewBtn.onclick = toggleView;
 
-    // 核心切换逻辑：如果是已完成则变回未完成，反之亦然
-    window.toggleQuest = function(id) {
-        const quest = quests.find(q => q.id === id);
-        if (quest) {
-            quest.completed = !quest.completed;
-            saveAndRefresh();
-        }
-    };
-
-    window.deleteQuest = function(id) {
-        if (confirm("确定要永久删除这个小任务吗？")) {
-            quests = quests.filter(q => q.id !== id);
-            saveAndRefresh();
-        }
-    };
-
-    window.openEditQuest = function(id) {
-        const quest = quests.find(q => q.id === id);
-        if (!quest) return;
+        // 弹窗显隐
+        if (newDiaryBtn) newDiaryBtn.onclick = () => {
+            modal.style.display = 'flex';
+            // 自动填充今天日期
+            document.getElementById('diary-date').valueAsDate = new Date();
+        };
         
-        editingId = id;
-        modalTitle.textContent = "修改小任务 ✏️";
-        document.getElementById('quest-title').value = quest.title;
-        document.getElementById('quest-description').value = quest.description;
-        document.querySelector(`input[name="proposer"][value="${quest.proposer}"]`).checked = true;
-        
-        modal.style.display = "flex";
-    };
+        if (closeBtn) closeBtn.onclick = () => {
+            modal.style.display = 'none';
+            resetForm();
+        };
 
-    // --- 6. 事件监听 ---
-
-    addQuestBtn.addEventListener('click', () => {
-        editingId = null;
-        modalTitle.textContent = "提出一个新任务 💖";
-        document.getElementById('quest-title').value = '';
-        document.getElementById('quest-description').value = '';
-        modal.style.display = "flex";
-    });
-
-    saveQuestBtn.addEventListener('click', () => {
-        const title = document.getElementById('quest-title').value.trim();
-        const description = document.getElementById('quest-description').value.trim();
-        const proposer = document.querySelector('input[name="proposer"]:checked').value;
-
-        if (!title) return alert("任务标题不能为空哦！");
-
-        if (editingId) {
-            const index = quests.findIndex(q => q.id === editingId);
-            if (index !== -1) {
-                quests[index] = { ...quests[index], title, description, proposer };
+        // 点击背景关闭弹窗
+        window.onclick = (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                resetForm();
             }
-        } else {
-            quests.push({
-                id: Date.now(),
-                title,
-                description,
-                proposer,
-                completed: false
-            });
+        };
+
+        // 保存日记
+        if (saveBtn) {
+            saveBtn.onclick = () => {
+                const date = document.getElementById('diary-date').value;
+                const content = document.getElementById('diary-content').value;
+                const weather = document.getElementById('diary-weather').value;
+                const color = document.querySelector('input[name="signature-color"]:checked').value;
+                const imageSrc = imgPreview.src;
+
+                if (!date || !content) return alert('日期和内容都要写哦！');
+
+                const newEntry = {
+                    date,
+                    content,
+                    weather,
+                    color,
+                    image: imageSrc.startsWith('data') ? imageSrc : null
+                };
+
+                diaries.push(newEntry);
+                localStorage.setItem('xiaojiaDiaries', JSON.stringify(diaries));
+                
+                modal.style.display = 'none';
+                resetForm();
+                renderCards();
+                
+                // 自动跳到新日记那一页（封底的前一页）
+                showPage(diaries.length);
+            };
         }
 
-        saveAndRefresh();
-        modal.style.display = "none";
-        editingId = null;
-    });
+        // 图片选择预览
+        if (imgInput) {
+            imgInput.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        imgPreview.src = event.target.result;
+                        imgPreviewContainer.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+        }
 
-    closeBtn.addEventListener('click', () => modal.style.display = "none");
-    window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = "none"; });
+        // 移除图片预览
+        if (removeImgBtn) {
+            removeImgBtn.onclick = () => {
+                imgInput.value = "";
+                imgPreview.src = "";
+                imgPreviewContainer.style.display = 'none';
+            };
+        }
+    }
 
-    renderQuests();
+    function resetForm() {
+        document.getElementById('diary-content').value = "";
+        document.getElementById('diary-weather').value = "";
+        imgInput.value = "";
+        imgPreview.src = "";
+        imgPreviewContainer.style.display = 'none';
+    }
+
+    // 启动！
+    init();
 });
