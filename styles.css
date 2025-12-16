@@ -143,27 +143,80 @@ nav {
     color: #3E8E8E;
 }
 
-/* --- 留言板 --- */
-#messages-container {
+/* 留言列表样式 */
+.msg-list-container {
     margin-top: 20px;
-    padding-top: 10px;
-    border-top: 2px dashed #B4DFD9;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .message-entry {
-    background-color: #FAFFFC;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-left: 5px solid #E68A47; /* 橘色甜蜜标记 */
+    display: flex;
+    width: 100%;
 }
 
-.message-date {
-    display: block;
-    font-size: 0.8em;
-    color: #5EAFB0;
+/* 我写的靠右，对方靠左 */
+.msg-me { justify-content: flex-end; }
+.msg-other { justify-content: flex-start; }
+
+.msg-bubble {
+    max-width: 80%;
+    padding: 12px;
+    border: 3px solid #194C4F;
+    position: relative;
+    background: white;
+}
+
+.msg-me .msg-bubble { background-color: #FFF0F5; box-shadow: 4px 4px 0 #FFD1DC; }
+.msg-other .msg-bubble { background-color: #F0F8FF; box-shadow: -4px 4px 0 #B0E0E6; }
+
+/* 撤销状态样式 */
+.message-entry.withdrawn .msg-text {
+    color: #999;
+    font-style: italic;
+}
+
+.msg-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    margin-top: 8px;
+    border-top: 1px dashed #ccc;
+    padding-top: 5px;
+}
+
+.msg-actions {
+    display: flex;
+    gap: 10px;
     margin-top: 5px;
+    justify-content: flex-end;
 }
 
+.action-link {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 0.7rem;
+    cursor: pointer;
+    text-decoration: underline;
+    color: #5EAFB0;
+}
+
+.delete-text { color: #ff9999; }
+
+.msg-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.author-selector label {
+    margin-right: 15px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
 /* --- 底部 --- */
 footer {
     margin-top: auto; /* 推到底部 */
@@ -173,4 +226,126 @@ footer {
     text-align: center;
     padding: 10px 0;
     font-size: 0.9em;
+}
+
+/* 纪念日列表容器 */
+.anniv-list-container {
+    margin-top: 20px;
+}
+
+.anniv-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 2px dashed #5EAFB0;
+    transition: all 0.3s;
+}
+
+/* 划掉效果 */
+.anniv-item.strikethrough {
+    opacity: 0.6;
+    background-color: #f0f0f0;
+}
+.anniv-item.strikethrough .anniv-title {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.anniv-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.anniv-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #194C4F;
+}
+
+.anniv-date-label {
+    font-size: 0.8rem;
+    color: #5EAFB0;
+}
+
+/* 倒计时标签 */
+.days-tag {
+    background: #FFD1DC;
+    padding: 2px 8px;
+    border: 1px solid #194C4F;
+    font-size: 0.9rem;
+    margin-right: 10px;
+}
+
+/* 小按钮样式 */
+.sm-btn {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+}
+
+.add-anniv-form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.add-anniv-form input {
+    flex: 1;
+    min-width: 150px;
+}
+/* 留言列表布局 */
+.msg-list-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* 区分左侧和右侧 */
+.message-entry { display: flex; width: 100%; }
+.msg-me { justify-content: flex-end; }
+.msg-other { justify-content: flex-start; }
+
+.msg-bubble {
+    max-width: 85%;
+    padding: 12px;
+    border: 3px solid #194C4F;
+    background: white;
+    position: relative;
+}
+
+/* 颜色区分 */
+.msg-me .msg-bubble { background-color: #FFF0F5; box-shadow: 4px 4px 0 #FFD1DC; }
+.msg-other .msg-bubble { background-color: #F0F8FF; box-shadow: -4px 4px 0 #B0E0E6; }
+
+.msg-text { margin: 0; line-height: 1.5; word-break: break-all; }
+
+.msg-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    margin-top: 8px;
+    border-top: 1px dashed #ccc;
+    padding-top: 5px;
+    gap: 10px;
+}
+
+.msg-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+    justify-content: flex-end;
+}
+
+.action-link {
+    background: none; border: none; font-family: inherit; font-size: 0.7rem;
+    cursor: pointer; text-decoration: underline; color: #5EAFB0;
+}
+
+/* 撤销样式 */
+.message-entry.withdrawn .msg-text {
+    color: #999;
+    font-style: italic;
 }

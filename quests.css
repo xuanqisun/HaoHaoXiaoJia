@@ -1,0 +1,218 @@
+/* * 📝 好好小家 - 小任务样式表 (完整整合版)
+ */
+
+ :root {
+    --color-dark-green: #194C4F;
+    --color-medium-green: #3E8E8E;
+    --color-light-green: #B4DFD9;
+    --color-warm-orange: #E68A47;
+    --color-pixel-shadow: #5EAFB0;
+    --color-background-light: #E8F7F3;
+}
+
+/* 主容器布局 */
+.quests-main {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 30px 20px;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.quest-panel {
+    flex: 1;
+    min-height: 500px;
+    padding: 20px;
+}
+
+.quest-panel h2 {
+    border-bottom: 4px solid var(--color-light-green);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+/* 任务列表容器 */
+.quest-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* 单个任务卡片样式 */
+.quest-item {
+    background: #FAFFFC;
+    border: 3px solid var(--color-dark-green);
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 3px 3px 0 var(--color-pixel-shadow);
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column; /* 垂直布局确保 footer 在底部 */
+}
+
+/* 悬停效果：向上浮动且阴影加深 */
+.quest-item:not(.completed):hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--color-pixel-shadow);
+    background-color: #F0FFF0;
+}
+
+/* 任务头部：标题与提出者 */
+.quest-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.quest-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: var(--color-dark-green);
+}
+
+/* 提出者标签 */
+.proposer-tag {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    color: white;
+    font-weight: bold;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+}
+.proposer-tag.me { background-color: #FF69B4; }
+.proposer-tag.other { background-color: #4169E1; }
+
+/* 任务详情：【重点】增加了底部间距 */
+.quest-desc {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 25px; /* 增加描述文字与页脚的距离 */
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+/* 任务页脚：【重点】日期与按钮右对齐 */
+.quest-footer {
+    display: flex;
+    justify-content: flex-end; /* 所有内容右对齐 */
+    align-items: center;
+    gap: 15px; /* 日期和按钮组之间的间距 */
+    border-top: 1px dashed var(--color-light-green);
+    padding-top: 12px;
+    margin-top: auto; /* 自动推到卡片最底部 */
+}
+
+/* 日期样式 */
+.quest-footer span {
+    font-size: 0.8rem !important;
+    color: #999;
+}
+
+/* 按钮组 */
+.quest-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* 按钮基础样式：图标化 */
+.action-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 1.2rem; /* 图标放大 */
+    padding: 4px;
+    transition: transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn:hover {
+    transform: scale(1.2);
+}
+
+.delete-btn { color: #ff6b6b; }
+.complete-btn { color: var(--color-medium-green); }
+.edit-btn { color: var(--color-warm-orange); }
+
+/* 已完成任务特殊样式 */
+.quest-item.completed {
+    opacity: 0.65;
+    background-color: #f5f5f5;
+    border-color: #ccc;
+    box-shadow: 2px 2px 0 #ddd;
+}
+.quest-item.completed .quest-title {
+    text-decoration: line-through;
+    color: #888;
+}
+
+/* --- 模态窗口样式 --- */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(232, 247, 243, 0.85);
+    align-items: center; 
+    justify-content: center; 
+}
+
+.modal-content {
+    background-color: #FFFFFF; 
+    padding: 30px;
+    width: 90%;
+    max-width: 400px;
+    border: 4px solid var(--color-dark-green);
+    box-shadow: 6px 6px 0 var(--color-medium-green);
+}
+
+.close-btn {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--color-dark-green);
+}
+
+.pixel-input {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    border: 3px solid var(--color-dark-green);
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.signature-group {
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+}
+
+.radio-options label {
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.undo-btn { 
+    color: var(--color-warm-orange); /* 使用温暖的橘色表示撤回 */
+}
+
+#add-quest-btn {
+    width: 100%;
+    margin-top: 20px;
+}
+
+
+/* 移动端适配 */
+@media screen and (max-width: 768px) {
+    .quests-main {
+        flex-direction: column;
+    }
+}

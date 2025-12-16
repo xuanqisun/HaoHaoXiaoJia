@@ -1,10 +1,9 @@
 /**
- * 📝 好好小家 - 小任务核心逻辑 (完整增强版)
- * 包含：任务加载、渲染、新增、修改、完成/撤回切换、彻底删除
+ * 📝 好好小家 - 小任务核心逻辑
+ * 重点：增加了 toggleQuest 的双向切换（完成 <-> 撤回）
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- 1. DOM 元素获取 ---
     const todoListContainer = document.getElementById('todo-list');
     const doneListContainer = document.getElementById('done-list');
     const addQuestBtn = document.getElementById('add-quest-btn');
@@ -13,14 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveQuestBtn = document.getElementById('save-quest-btn');
     const modalTitle = document.getElementById('modal-title');
 
-    // --- 2. 状态变量 ---
     let quests = loadQuests();
     let editingId = null; 
 
-    // --- 3. 数据持久化 ---
     function loadQuests() {
-        const stored = localStorage.getItem('xiaojiaQuests');
-        return stored ? JSON.parse(stored) : [];
+        return JSON.parse(localStorage.getItem('xiaojiaQuests') || '[]');
     }
 
     function saveAndRefresh() {
@@ -28,35 +24,34 @@ document.addEventListener('DOMContentLoaded', () => {
         renderQuests();
     }
 
-    // --- 4. 渲染逻辑 ---
     function renderQuests() {
         todoListContainer.innerHTML = '';
         doneListContainer.innerHTML = '';
 
-        // 排序：最新的排在前面
+        // 按时间倒序排列
         const sortedQuests = [...quests].sort((a, b) => b.id - a.id);
 
         sortedQuests.forEach(quest => {
             const questEl = document.createElement('div');
-            // 如果完成了，添加 completed 类名
             questEl.className = `quest-item ${quest.completed ? 'completed' : ''}`;
             
             const proposerClass = quest.proposer === '我' ? 'me' : 'other';
             
-            // 动态生成操作按钮
+            // --- 核心修改：动态生成按钮 ---
             let actionButtons = '';
+            
             if (quest.completed) {
-                // 已完成状态：显示“撤回”和“彻底删除”
+                // 如果是已完成状态，显示“撤回”图标 (↩️)
                 actionButtons = `
                     <div class="quest-actions">
-                        <button class="action-btn undo-btn" onclick="toggleQuest(${quest.id})" title="撤回到待办">↩️</button>
+                        <button class="action-btn undo-btn" onclick="toggleQuest(${quest.id})" title="撤回到待办清单">↩️</button>
                         <button class="action-btn delete-btn" onclick="deleteQuest(${quest.id})" title="彻底删除">🗑️</button>
                     </div>`;
             } else {
-                // 未完成状态：显示“完成”、“修改”、“删除”
+                // 如果是未完成状态，显示“完成”、“编辑”和“删除”
                 actionButtons = `
                     <div class="quest-actions">
-                        <button class="action-btn complete-btn" onclick="toggleQuest(${quest.id})" title="标记完成">✅</button>
+                        <button class="action-btn complete-btn" onclick="toggleQuest(${quest.id})" title="标记为已完成">✅</button>
                         <button class="action-btn edit-btn" onclick="openEditQuest(${quest.id})" title="修改内容">✏️</button>
                         <button class="action-btn delete-btn" onclick="deleteQuest(${quest.id})" title="删除任务">🗑️</button>
                     </div>`;
@@ -74,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
+            // 分发到不同的容器
             if (quest.completed) {
                 doneListContainer.appendChild(questEl);
             } else {
@@ -83,19 +79,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 空状态处理
         if (todoListContainer.children.length === 0) {
-            todoListContainer.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">暂时没有小任务，快去想一个吧！</p>';
-        }
-        if (doneListContainer.children.length === 0) {
-            doneListContainer.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">还没有解锁成就哦~</p>';
+            todoListContainer.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">暂时没有小任务～</p>';
         }
     }
 
-    // --- 5. 全局交互功能 ---
+    // --- 逻辑函数 ---
 
-    // 核心切换逻辑：如果是已完成则变回未完成，反之亦然
     window.toggleQuest = function(id) {
         const quest = quests.find(q => q.id === id);
         if (quest) {
+            // 切换状态：true 变 false, false 变 true
             quest.completed = !quest.completed;
             saveAndRefresh();
         }
@@ -111,17 +104,30 @@ document.addEventListener('DOMContentLoaded', () => {
     window.openEditQuest = function(id) {
         const quest = quests.find(q => q.id === id);
         if (!quest) return;
-        
         editingId = id;
         modalTitle.textContent = "修改小任务 ✏️";
         document.getElementById('quest-title').value = quest.title;
         document.getElementById('quest-description').value = quest.description;
         document.querySelector(`input[name="proposer"][value="${quest.proposer}"]`).checked = true;
-        
         modal.style.display = "flex";
     };
 
-    // --- 6. 事件监听 ---
+    saveQuestBtn.addEventListener('click', () => {
+        const title = document.getElementById('quest-title').value.trim();
+        const description = document.getElementById('quest-description').value.trim();
+        const proposer = document.querySelector('input[name="proposer"]:checked').value;
+        if (!title) return alert("标题不能为空！");
+
+        if (editingId) {
+            const idx = quests.findIndex(q => q.id === editingId);
+            if (idx !== -1) quests[idx] = { ...quests[idx], title, description, proposer };
+        } else {
+            quests.push({ id: Date.now(), title, description, proposer, completed: false });
+        }
+        saveAndRefresh();
+        modal.style.display = "none";
+        editingId = null;
+    });
 
     addQuestBtn.addEventListener('click', () => {
         editingId = null;
@@ -131,35 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.style.display = "flex";
     });
 
-    saveQuestBtn.addEventListener('click', () => {
-        const title = document.getElementById('quest-title').value.trim();
-        const description = document.getElementById('quest-description').value.trim();
-        const proposer = document.querySelector('input[name="proposer"]:checked').value;
-
-        if (!title) return alert("任务标题不能为空哦！");
-
-        if (editingId) {
-            const index = quests.findIndex(q => q.id === editingId);
-            if (index !== -1) {
-                quests[index] = { ...quests[index], title, description, proposer };
-            }
-        } else {
-            quests.push({
-                id: Date.now(),
-                title,
-                description,
-                proposer,
-                completed: false
-            });
-        }
-
-        saveAndRefresh();
-        modal.style.display = "none";
-        editingId = null;
-    });
-
     closeBtn.addEventListener('click', () => modal.style.display = "none");
-    window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = "none"; });
-
     renderQuests();
 });

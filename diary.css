@@ -380,3 +380,153 @@
             transform: translate(2px, 2px);
             box-shadow: none;
         }
+        /* 模态窗口内的设置组 */
+.settings-group {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+    border-top: 2px dashed #eee;
+    padding-top: 10px;
+}
+
+.setting-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.setting-item .label {
+    font-size: 0.8rem;
+    color: #666;
+    font-weight: bold;
+}
+
+/* 按钮样式 */
+.card-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.edit-btn, .delete-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    text-decoration: underline;
+    font-family: 'DotGothic16', monospace;
+}
+
+.edit-btn { color: #5EAFB0; }
+.delete-btn { color: #ff6b6b; }
+
+/* 隐私标签 */
+.privacy-tag {
+    display: inline-block;
+    background: #f0f0f0;
+    color: #888;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-bottom: 5px;
+}
+
+.diary-footer {
+    border-top: 1px dashed #ccc;
+    padding-top: 10px;
+    margin-top: 10px;
+}
+/* --- 日记卡片内的图片显示优化 --- */
+
+.diary-img-wrapper {
+    width: 100%;           /* 宽度铺满卡片内容区 */
+    max-width: 280px;      /* 限制最大宽度，防止横向过大 */
+    aspect-ratio: 4 / 3;   /* 📸 强制维持 4:3 的黄金比例 (也可以改成 1/1 变成正方形) */
+    margin: 10px auto;     /* 居中显示，与文字留出间距 */
+    
+    border: 3px solid var(--color-dark-green); /* 像素边框 */
+    box-shadow: 3px 3px 0 var(--color-light-green);
+    background-color: #eee; /* 图片未加载时的占位色 */
+    overflow: hidden;      /* 关键：隐藏超出比例的部分 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.diary-photo {
+    width: 100%;
+    height: 100%;
+    /* 核心属性：等比例缩放并填满容器，多余部分自动裁剪 */
+    object-fit: cover; 
+    
+    /* 如果你希望看到完整图片（不裁剪）但留白，可以改成：
+       object-fit: contain; 
+       background-color: #000; 
+    */
+    
+    image-rendering: pixelated; /* 保持像素风（可选） */
+    transition: transform 0.3s ease;
+}
+
+/* 鼠标悬停在图片上时轻微放大，增加互动感 */
+.diary-img-wrapper:hover .diary-photo {
+    transform: scale(1.05);
+}
+/* 写日记弹窗里的预览图限制 */
+#image-preview {
+    max-width: 100px !important; /* 限制预览图非常小，不影响写字 */
+    max-height: 100px !important;
+    object-fit: cover;
+    border: 2px solid var(--color-medium-green);
+}
+
+/* 适配移动端 */
+@media screen and (max-width: 768px) {
+    .diary-img-wrapper {
+        max-width: 100%;    /* 手机端宽度占满 */
+        aspect-ratio: 16 / 9; /* 手机端可以稍微扁一点，给文字留空间 */
+    }
+}
+
+
+/* --- 移动端适配 (响应式) --- */
+@media screen and (max-width: 768px) {
+    .diary-main {
+        padding: 10px; /* 减小内边距 */
+    }
+
+    #card-stack-container {
+        width: 100%; /* 宽度占满屏幕 */
+        max-width: 350px; /* 但最大不超过 350px */
+        height: 500px; /* 高度适当拉长以容纳内容 */
+        margin: 20px auto; /* 居中 */
+    }
+
+    .diary-card.card-cover h2 {
+        font-size: 1.8em; /* 缩小标题字体 */
+    }
+    
+    /* 调整按钮位置，防止遮挡内容 */
+    #new-diary-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        font-size: 24px;
+    }
+    
+    #toggle-view-btn {
+        bottom: 80px;
+        right: 20px;
+        padding: 8px 10px;
+    }
+}
+
+/* 移动端适配：手机上图片可以稍微高一点 */
+@media screen and (max-width: 768px) {
+    .diary-photo {
+        max-height: 150px;
+    }
+}

@@ -6,43 +6,178 @@
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
     <title>好好小家 - 我们的爱的小屋</title>
     <link rel="stylesheet" href="styles.css"> 
+    
+    <style>
+        /* 布局与安全性增强样式 */
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            min-height: 100vh;
+        }
+
+        /* 登录屏幕 */
+        #auth-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: #E8F7F3; 
+            z-index: 9999; 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'DotGothic16', monospace; 
+        }
+        .auth-box {
+            background-color: #FFFFFF;
+            padding: 30px;
+            border: 4px solid #194C4F;
+            box-shadow: 6px 6px 0 #5EAFB0;
+            text-align: center;
+        }
+
+        #app-container {
+             display: none; /* 初始隐藏，由 script.js 控制显示 */
+             width: 100%; 
+             min-height: 100vh;
+             flex-direction: column;
+             align-items: center; 
+        }
+        
+        main {
+            width: 90%; 
+            max-width: 800px;
+        }
+
+        /* 纪念日特有样式 */
+        .add-anniv-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .add-anniv-form input { flex: 1; min-width: 150px; }
+        
+        .anniv-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 2px dashed #5EAFB0;
+            background: rgba(255,255,255,0.5);
+            margin-bottom: 5px;
+        }
+        .anniv-item.strikethrough {
+            opacity: 0.6;
+            background-color: #f0f0f0;
+        }
+        .anniv-item.strikethrough .anniv-title {
+            text-decoration: line-through;
+            color: #888;
+        }
+        .anniv-info { display: flex; flex-direction: column; text-align: left; }
+        .anniv-title { font-size: 1.1rem; font-weight: bold; }
+        .anniv-date-label { font-size: 0.8rem; color: #5EAFB0; }
+        .days-tag {
+            background: #FFD1DC;
+            padding: 2px 8px;
+            border: 1px solid #194C4F;
+            font-size: 0.8rem;
+            margin-right: 5px;
+        }
+        .sm-btn { padding: 4px 8px; font-size: 0.7rem; margin-left: 5px; }
+        .delete-link { color: #ff4d4d; font-size: 0.7rem; cursor: pointer; text-decoration: underline; background: none; border: none; }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .logout-btn { background-color: #ff9999; border-color: #cc7777; font-size: 0.7rem; padding: 5px 10px; }
+    </style>
 </head>
 <body>
-    <div id="pixel-background"></div>
     
-    <header class="pixel-border">
-        <h1>
-            <span class="icon">🏠</span> 好好小家 <span class="icon">💖</span>
-        </h1>
-        <nav>
-            <a href="index.html" class="nav-item pixel-btn">主页</a>
-            <a href="memories.html" class="nav-item pixel-btn">回忆录</a>
-            <a href="quests.html" class="nav-item pixel-btn">甜蜜任务</a>
-        </nav>
-    </header>
+    <div id="pixel-background"></div>
 
-    <main>
-        <section id="counter" class="pixel-box">
-            <h2><span class="icon">⏳</span> 我们在一起...</h2>
-            <div id="days" class="days-count">000</div> 
-            <p>天</p>
-        </section>
+    <div id="auth-screen">
+        <div class="auth-box">
+            <h2>💖 我们的秘密基地 💖</h2>
+            <p>请输入暗号进入小屋:</p>
+            <input type="password" id="secret-password-input" placeholder="输入甜蜜暗号...">
+            <button id="auth-button" class="pixel-btn primary-btn" onclick="checkPassword()">进入小屋</button>
+        </div>
+    </div>
 
-        <section id="message-board" class="pixel-box">
-            <h2><span class="icon">✉️</span> 悄悄话信箱</h2>
-            <p class="description">留下一句今天的甜蜜...</p>
-            <textarea id="message-input" placeholder="请输入您的甜蜜话语..." class="pixel-input"></textarea>
-            <button onclick="postMessage()" class="pixel-btn primary-btn">发送爱语</button>
-        
-            <div id="messages-container">
+    <div id="app-container"> 
+
+        <header class="pixel-border">
+            <div class="header-top">
+                <h1>🏠 好好小家</h1>
+                <button onclick="logout()" class="pixel-btn logout-btn">安全退出</button>
+            </div>
+            <nav>
+                <a href="index.html" class="nav-item pixel-btn">主页</a>
+                <a href="memories.html" class="nav-item pixel-btn">回忆录</a>
+                <a href="quests.html" class="nav-item pixel-btn">甜蜜任务</a>
+            </nav>
+        </header>
+
+        <main>
+            <section id="counter" class="pixel-box">
+                <h2><span class="icon">⏳</span> 我们在一起已经...</h2>
+                <div id="days" class="days-count">000</div> 
+                <p>天</p>
+            </section>
+
+            <section id="anniversary-manager" class="pixel-box">
+                <h2><span class="icon">📅</span> 纪念日倒数清单</h2>
+                <div class="add-anniv-form">
+                    <input type="text" id="anniv-name" placeholder="想倒数的事 (如: 周年、旅行)" class="pixel-input">
+                    <input type="date" id="anniv-date" class="pixel-input">
+                    <button onclick="addAnniversary()" class="pixel-btn primary-btn">添加</button>
                 </div>
-        </section>
-    </main>
+                <div id="anniv-list">
+                    </div>
+            </section>
 
-    <footer class="pixel-border">
-        <p>© 专属我们两人的小家 - 像素爱恋版</p>
-    </footer>
+            <section id="message-board" class="pixel-box">
+                <h2><span class="icon">✉️</span> 悄悄话信箱</h2>
+                
+                <div class="message-input-area">
+                    <textarea id="message-input" placeholder="留下一句今天的甜蜜..." class="pixel-input"></textarea>
+                    
+                    <div class="msg-controls" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                        <div class="author-selector">
+                            <label style="cursor: pointer; margin-right: 10px;">
+                                <input type="radio" name="msg-author" value="me" checked> 💖 我
+                            </label>
+                            <label style="cursor: pointer;">
+                                <input type="radio" name="msg-author" value="other"> 💙 对方
+                            </label>
+                        </div>
+                        <button onclick="postMessage()" class="pixel-btn primary-btn">发送</button>
+                    </div>
+                </div>
+            
+                <div id="messages-container" class="msg-list-container">
+                    </div>
+            </section>
+        </main>
 
+        <footer>
+            <p>© 专属我们两人的像素小家 | 2025</p>
+        </footer>
+    </div>
+    
     <script src="script.js"></script> 
 </body>
 </html>

@@ -54,23 +54,48 @@
     <div id="diary-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
-            <h3>写下新的甜蜜日记 ✍️</h3>
+            <h3 id="modal-title">写下新的甜蜜日记 ✍️</h3>
+            
             <div class="input-group">
                 日期: <input type="date" id="diary-date">
                 天气: <input type="text" id="diary-weather" placeholder="晴天/多云/雨">
             </div>
-            <textarea id="diary-content" placeholder="记录今天发生的美好事情..."></textarea>
             
-            <div class="input-group signature-group">
-                落款人:
-                <label class="pink-label">
-                    <input type="radio" name="signature-color" value="粉色落款" checked> 💖 我
+            <textarea id="diary-content" placeholder="记录今天发生的美好事情..."></textarea>
+            <div class="image-upload-section">
+                <label for="diary-image-input" class="pixel-btn sm-btn" style="cursor: pointer;">
+                    📷 添加一张照片
                 </label>
-                <label class="blue-label">
-                    <input type="radio" name="signature-color" value="蓝色落款"> 💙 对方
-                </label>
+                <input type="file" id="diary-image-input" accept="image/*" style="display: none;">
+                
+                <div id="image-preview-container" style="display: none; margin-top: 10px; position: relative; width: fit-content;">
+                    <img id="image-preview" src="" alt="预览" style="max-width: 150px; border: 2px solid #3E8E8E;">
+                    <span id="remove-image-btn" style="position: absolute; top: -10px; right: -10px; background: #ff6b6b; color: white; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px; cursor: pointer; border: 2px solid #fff;">&times;</span>
+                </div>
             </div>
 
+            <div class="settings-group">
+                <div class="setting-item">
+                    <span class="label">落款人:</span>
+                    <label class="pink-label">
+                        <input type="radio" name="signature-color" value="粉色落款" checked> 💖 我
+                    </label>
+                    <label class="blue-label">
+                        <input type="radio" name="signature-color" value="蓝色落款"> 💙 对方
+                    </label>
+                </div>
+                
+                <div class="setting-item">
+                    <span class="label">权限:</span>
+                    <label class="green-label">
+                        <input type="radio" name="privacy-level" value="public" checked> 👀 允许对方看
+                    </label>
+                    <label class="red-label">
+                        <input type="radio" name="privacy-level" value="private"> 🔒 仅自己可见
+                    </label>
+                </div>
+            </div>
+    
             <button id="save-diary" class="pixel-btn primary-btn">保存日记</button>
         </div>
     </div>
