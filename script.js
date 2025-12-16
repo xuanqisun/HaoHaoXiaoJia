@@ -1,5 +1,5 @@
 // --- 基础配置 ---
-const startDate = new Date('2025-05-06'); // 你们在一起的日期
+const startDate = new Date('2025-09-19'); // 你们在一起的日期
 const SECRET_PASSWORD = 'loveu'; // 你的暗号
 
 // --- 1. 页面初始化与安全验证 ---
